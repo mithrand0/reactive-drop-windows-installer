@@ -1,6 +1,5 @@
 ;NSIS Modern User Interface
-;Multilingual Example Script
-;Written by Joost Verburg
+;Multilingual Script
 
 !pragma warning error all
 
