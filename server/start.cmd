@@ -1,0 +1,1 @@
+srcds.exe -game reactivedrop -console -ip 0.0.0.0 -nohltv -nomessagebox -nocrashdialog -port 27050 +con_logfile "console.log" -maxplayers 8 +exec servername.cfg +exec server.cfg

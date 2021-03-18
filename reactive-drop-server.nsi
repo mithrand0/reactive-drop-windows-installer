@@ -3,10 +3,15 @@
 
 !pragma warning error all
 
+
 ;--------------------------------
 ;Include Modern UI
 
   !include "MUI2.nsh"
+  !include "nsDialogs.nsh"
+
+  !define MUI_ICON "assets/logo.ico"
+  !define MUI_HEADERIMAGE_BITMAP "assets/logo.bmp"
 
 ;--------------------------------
 ;General
@@ -27,7 +32,7 @@
   ;Get installation folder from registry if available
   InstallDirRegKey HKCU "Software\Reactive Drop Dedicated Server" ""
 
-  ;Request application privileges for Windows Vista
+  ;Request application privileges for Windows Vista and higher
   RequestExecutionLevel user
 
 ;--------------------------------
@@ -151,9 +156,9 @@ Section "Dedicated Server" Server
 
   ;Installation path
   SetOutPath "$INSTDIR"
+  SetOverwrite ifnewer
 
   ;Download SteamCMD
-  SetOverwrite ifnewer
   IfFileExists "$INSTDIR/steamcmd.zip" +2
   NSISdl::download "https://media.steampowered.com/installer/steamcmd.zip" "$INSTDIR/steamcmd.zip"
 
@@ -165,7 +170,10 @@ Section "Dedicated Server" Server
   Delete "$INSTDIR/steamcmd.zip"
 
   ;Install server
-  nsExec::ExecToLog '"$INSTDIR/steamcmd.exe" +login anonymous +app_update 582400 validate +quit'
+  ;nsExec::ExecToLog '"$INSTDIR/steamcmd.exe" +login anonymous +force_install_dir server +app_update 582400 validate +quit'
+
+  ;Install configs
+  File /r "server"
 
   ;Store installation folder
   WriteRegStr HKCU "Software\Reactive Drop Dedicated Server" "" "$INSTDIR"
@@ -173,8 +181,8 @@ Section "Dedicated Server" Server
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
-  ;Debug
-  Sleep 10000
+  ;Wait
+  Sleep 5000
 
 SectionEnd
 
