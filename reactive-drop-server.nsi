@@ -209,7 +209,7 @@ Section "Dedicated Server" Server
   FileWrite $0 `  Write-output "Server starting at: $$(Get-Date)"$\r$\n`
   FileWrite $0 `  Start-Process "server\srcds.exe" -ArgumentList $$arguments -Wait$\r$\n`
   FileWrite $0 `  Write-output "Server crashed or shutdown at: $$(Get-Date)"$\r$\n`
-  FileWrite $0 `  Timeout /T 5"$\r$\n`
+  FileWrite $0 `  Timeout /T 5$\r$\n`
   FileWrite $0 `}$\r$\n`
   FileClose $0
 
