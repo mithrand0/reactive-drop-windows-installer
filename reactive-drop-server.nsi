@@ -70,7 +70,7 @@
 ;Pages
 
   !insertmacro MUI_PAGE_WELCOME
-  !insertmacro MUI_PAGE_LICENSE ".\LICENSE"
+  !insertmacro MUI_PAGE_LICENSE "assets\steam-license.txt"
   !insertmacro MUI_PAGE_COMPONENTS
   Page custom SetCustom ValidateCustom ": Intallation Options"
   !insertmacro MUI_PAGE_DIRECTORY
@@ -79,7 +79,7 @@
 
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
-  !insertmacro MUI_UNPAGE_LICENSE ".\LICENSE"
+  !insertmacro MUI_UNPAGE_LICENSE "assets\steam-license.txt"
   !insertmacro MUI_UNPAGE_COMPONENTS
   !insertmacro MUI_UNPAGE_DIRECTORY
   !insertmacro MUI_UNPAGE_INSTFILES
