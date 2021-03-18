@@ -8,7 +8,6 @@
 ;Include Modern UI
 
   !include "MUI2.nsh"
-  !include "nsDialogs.nsh"
 
   !define MUI_ICON "assets/logo.ico"
   !define MUI_HEADERIMAGE_BITMAP "assets/logo.bmp"
@@ -43,6 +42,9 @@
   ;Show all languages, despite user's codepage
   !define MUI_LANGDLL_ALLLANGUAGES
 
+  ; file reservation
+  ReserveFile "options.ini"
+
 ;--------------------------------
 ;Language Selection Dialog Settings
 
@@ -54,10 +56,13 @@
 ;--------------------------------
 ;Pages
 
+  Page custom SetCustom ValidateCustom ": Intallation Options"
   !insertmacro MUI_PAGE_WELCOME
   !insertmacro MUI_PAGE_LICENSE ".\LICENSE"
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
+
+
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_PAGE_FINISH
 
@@ -151,7 +156,6 @@
 
 ;--------------------------------
 ;Installer Sections
-
 Section "Dedicated Server" Server
 
   ;Installation path
@@ -170,7 +174,7 @@ Section "Dedicated Server" Server
   Delete "$INSTDIR/steamcmd.zip"
 
   ;Install server
-  ;nsExec::ExecToLog '"$INSTDIR/steamcmd.exe" +login anonymous +force_install_dir server +app_update 582400 validate +quit'
+  nsExec::ExecToLog '"$INSTDIR/steamcmd.exe" +login anonymous +force_install_dir server +app_update 582400 validate +quit'
 
   ;Install configs
   File /r "server"
@@ -188,12 +192,31 @@ SectionEnd
 
 ;--------------------------------
 ;Installer Functions
+Function SetCustom
+
+  ;Display the Install Options dialog
+  Push $R0
+  InstallOptions::dialog $PLUGINSDIR\options.ini
+  Pop $R0
+
+FunctionEnd
+
+Function ValidateCustom
+
+  ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 1" "State"
+  StrCmp $R0 "" 0 +3
+    MessageBox MB_ICONEXCLAMATION|MB_OK "Please enter a valid server name"
+    Abort
+
+FunctionEnd
 
 Function .onInit
 
   !insertmacro MUI_LANGDLL_DISPLAY
   SectionSetSize ${Server} 4194304
 
+  InitPluginsDir
+  File /oname=$PLUGINSDIR\options.ini options.ini
 FunctionEnd
 
 ;--------------------------------
@@ -212,12 +235,8 @@ FunctionEnd
 
 Section "Uninstall"
 
-  ;ADD YOUR OWN FILES HERE...
-
   Delete "$INSTDIR\Uninstall.exe"
-
   RMDir "$INSTDIR"
-
   DeleteRegKey /ifempty HKCU "Software\Reactive Drop Dedicated Server"
 
 SectionEnd
@@ -230,3 +249,4 @@ Function un.onInit
   !insertmacro MUI_UNGETLANGUAGE
 
 FunctionEnd
+
