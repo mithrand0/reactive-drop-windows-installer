@@ -14,12 +14,15 @@
   ;Properly display all languages (Installer will not work on Windows 95, 98 or ME!)
   Unicode true
 
+  ;Show details by default
+  ShowInstDetails show
+
   ;Name and file
   Name "Reactive Drop - Dedicated Server"
   OutFile "RD-installer.exe"
 
   ;Default installation folder
-  InstallDir "$LOCALAPPDATA\Reactive Drop Dedicated Server"
+  InstallDir "$LOCALAPPDATA\Reactive-Drop-Server"
 
   ;Get installation folder from registry if available
   InstallDirRegKey HKCU "Software\Reactive Drop Dedicated Server" ""
@@ -146,15 +149,32 @@
 
 Section "Dedicated Server" Server
 
+  ;Installation path
   SetOutPath "$INSTDIR"
 
-  ;ADD YOUR OWN FILES HERE...
+  ;Download SteamCMD
+  SetOverwrite ifnewer
+  IfFileExists "$INSTDIR/steamcmd.zip" +2
+  NSISdl::download "https://media.steampowered.com/installer/steamcmd.zip" "$INSTDIR/steamcmd.zip"
+
+  ;Extract
+  IfFileExists "$INSTDIR/steamcmd.exe" +2
+  nsExec::ExecToLog '"powershell.exe" Expand-Archive "$INSTDIR/steamcmd.zip" "$INSTDIR"'
+
+  ;Delete the zip
+  Delete "$INSTDIR/steamcmd.zip"
+
+  ;Install server
+  nsExec::ExecToLog '"$INSTDIR/steamcmd.exe" +login anonymous +app_update 582400 validate +quit'
 
   ;Store installation folder
-  WriteRegStr HKCU "Software\Reactive Drop Dedicated Server" "" $INSTDIR
+  WriteRegStr HKCU "Software\Reactive Drop Dedicated Server" "" "$INSTDIR"
 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
+
+  ;Debug
+  Sleep 10000
 
 SectionEnd
 
