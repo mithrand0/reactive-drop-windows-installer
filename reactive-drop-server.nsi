@@ -55,6 +55,8 @@
 
   Var name
   Var port
+  Var players
+  Var spectators
 
 ;--------------------------------
 ;Language Selection Dialog Settings
@@ -194,17 +196,21 @@ Section "Dedicated Server" Server
   StrCpy $name "$R0"
   ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 6" "State"
   StrCpy $port "$R0"
+  ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 9" "State"
+  StrCpy $players "$R0"
+  ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 11" "State"
+  StrCpy $spectators "$R0"
 
   ;Write them
   FileOpen $0 "$INSTDIR\start-server.ps1" w
-  FileWrite $0 `$$arguments = '-game reactivedrop -console -ip 0.0.0.0 -nohltv -nomessagebox -nocrashdialog -port $port +con_logfile console.log -maxplayers 8 +hostname "$name" +exec server.cfg'$\r$\n`
+  FileWrite $0 `$$arguments = '-game reactivedrop -console -ip 0.0.0.0 -nohltv -nomessagebox -nocrashdialog -port $port +con_logfile console.log -maxplayers $spectators +rd_max_marines $players +hostname "$name" +exec server.cfg'$\r$\n`
   FileWrite $0 `$$host.UI.RawUI.WindowTitle = "Reactive Drop Server Watchdog"$\r$\n`
   FileWrite $0 `while($$true)$\r$\n`
   FileWrite $0 '{$\r$\n'
   FileWrite $0 `  Write-output "Server starting at: $$(Get-Date)"$\r$\n`
   FileWrite $0 `  Start-Process "server\srcds.exe" -ArgumentList $$arguments -Wait$\r$\n`
   FileWrite $0 `  Write-output "Server crashed or shutdown at: $$(Get-Date)"$\r$\n`
-  FileWrite $0 `  Timeout /T 5`
+  FileWrite $0 `  Timeout /T 5"$\r$\n`
   FileWrite $0 `}$\r$\n`
   FileClose $0
 
@@ -247,6 +253,9 @@ Function SetCustom
 
   WriteINIStr $PLUGINSDIR\options.ini "Field 2" "State" "My First Reactive Drop Server"
   WriteINIStr $PLUGINSDIR\options.ini "Field 6" "State" "27050"
+  WriteINIStr $PLUGINSDIR\options.ini "Field 9" "State" "4"
+  WriteINIStr $PLUGINSDIR\options.ini "Field 11" "State" "4"
+
 
   ;Display the Install Options dialog
   Push $R0
@@ -265,6 +274,16 @@ Function ValidateCustom
   ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 6" "State"
   StrCmp $R0 "" 0 +3
     MessageBox MB_ICONEXCLAMATION|MB_OK "Please enter a valid server port"
+    Abort
+
+  ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 9" "State"
+  StrCmp $R0 "" 0 +3
+    MessageBox MB_ICONEXCLAMATION|MB_OK "Please enter a valid number of players"
+    Abort
+
+  ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 11" "State"
+  StrCmp $R0 "" 0 +3
+    MessageBox MB_ICONEXCLAMATION|MB_OK "Please enter a valid number of spectators"
     Abort
 
 FunctionEnd
