@@ -13,6 +13,8 @@ jobs:
 
     - name: Create nsis installer
       uses: joncloud/makensis-action@v3.3
+      with:
+        script-file: "reactive-drop-server.nsi"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0

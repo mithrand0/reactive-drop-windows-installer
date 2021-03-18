@@ -31,7 +31,7 @@
   !define INSTALLSIZE 4194304
 
   Name "${COMPANYNAME} - ${APPNAME}"
-  OutFile "RD-installer.exe"
+  OutFile "RD-Server-Installer.exe"
 
   ;Default installation folder
   InstallDir "$LOCALAPPDATA\Reactive-Drop-Server"
